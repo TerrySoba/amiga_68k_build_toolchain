@@ -1,10 +1,14 @@
-from ubuntu:18.04
 
-# install ubuntu packages
-RUN apt update && \
-    apt install -y --no-install-recommends \
-        lhasa curl gcc make libc6-dev \
-    && rm -rf /var/lib/apt/lists/*
+FROM alpine:3.8
+
+# install some build tools
+RUN apk add --no-cache gcc make musl-dev curl
+
+# install lhasa to be able to extract lha files
+RUN mkdir -p /lhasa && cd /lhasa && \
+    curl -SL https://github.com/fragglet/lhasa/releases/download/v0.3.1/lhasa-0.3.1.tar.gz | tar -xz && \
+    cd /lhasa/lhasa-0.3.1 && ls && ./configure && make && make install && \
+    rm -rf /lhasa
 
 # build vbcc compiler for amiga
 RUN mkdir vbcc_tools && \
